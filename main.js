@@ -151,6 +151,8 @@ const MT = {
 {
   const t = tex('assets/tablet.png');
   MT.tablet = new THREE.MeshStandardMaterial({ map: t, emissiveMap: t, emissive: '#ffffff', emissiveIntensity: 0.55, roughness: 0.2 });
+  const tm = tex('assets/monitor.png');
+  MT.monitor = new THREE.MeshStandardMaterial({ map: tm, emissiveMap: tm, emissive: '#ffffff', emissiveIntensity: 0.55, roughness: 0.2 });
 }
 
 // ------------------------------------------------------------ geometría
@@ -425,22 +427,32 @@ scene.add(frank);
     cil(0.036, 0.006, MAT.grafito, s * 0.075, 0.033, 0, aud, 32);
   }
   malla(new THREE.TorusGeometry(0.075, 0.009, 10, 40, Math.PI), MAT.ink, 0, 0.03, 0, -Math.PI / 2 + 0.25, 0, 0, aud);
+  // monitor de 27" (16:9): pantalla de 59,8 x 33,6 cm, al fondo, mirando al pasillo
+  caja(0.24, 0.012, 0.18, MAT.grafito, 0.1, Z + 0.006, 0.12, 0, 0, 0, frank);
+  caja(0.05, 0.3, 0.02, MAT.grafito, 0.1, Z + 0.16, 0.08, 0, 0, 0, frank);
+  const mon = new THREE.Group();
+  mon.position.set(0.1, Z + 0.385, 0.12);
+  mon.rotation.x = -THREE.MathUtils.degToRad(5);
+  frank.add(mon);
+  caja(0.614, 0.37, 0.022, MAT.grafito, 0, 0, 0, 0, 0, 0, mon);
+  caja(0.3, 0.2, 0.03, MAT.grafito, 0, -0.02, -0.025, 0, 0, 0, mon);
+  lamina(0.598, 0.336, MT.monitor, 0, 0.008, 0.0115, 0, 0, mon).castShadow = false;
   // display acrílico A5 con QR
   const qr = new THREE.Group();
-  qr.position.set(0.46, Z + 0.005 + 0.112, 0.3);
+  qr.position.set(0.58, Z + 0.005 + 0.112, 0.38);
   qr.rotation.x = -THREE.MathUtils.degToRad(10);
   frank.add(qr);
   lamina(0.148, 0.21, MT.qr, 0, 0, -0.001, 0, 0, qr);
   caja(0.16, 0.225, 0.005, MAT.acrilico, 0, 0, 0.002, 0, 0, 0, qr).castShadow = false;
-  caja(0.16, 0.005, 0.08, MAT.acrilico, 0.46, Z + 0.0025, 0.28, 0, 0, 0, frank).castShadow = false;
+  caja(0.16, 0.005, 0.08, MAT.acrilico, 0.58, Z + 0.0025, 0.36, 0, 0, 0, frank).castShadow = false;
   // tarjetas
-  caja(0.1, 0.025, 0.045, MAT.pino, 0.6, Z + 0.0125, 0.5, 0, 0, 0, frank);
-  for (let k = 0; k < 3; k++) lamina(0.09, 0.05, MT.tarjeta, 0.6, Z + 0.04, 0.5 - k * 0.004, -0.26, 0, frank);
+  caja(0.1, 0.025, 0.045, MAT.pino, 0.64, Z + 0.0125, 0.56, 0, 0, 0, frank);
+  for (let k = 0; k < 3; k++) lamina(0.09, 0.05, MT.tarjeta, 0.64, Z + 0.04, 0.56 - k * 0.004, -0.26, 0, frank);
   // planta
-  cil(0.055, 0.1, MAT.maceta, 0.6, Z + 0.05, 0.14, frank);
+  cil(0.055, 0.1, MAT.maceta, 0.63, Z + 0.05, 0.12, frank);
   for (let k = 0; k < 9; k++) {
     const a = (k / 9) * Math.PI * 2;
-    const h = malla(new THREE.SphereGeometry(0.035, 12, 8), MAT.hoja, 0.6 + 0.03 * Math.cos(a), Z + 0.13 + rnd() * 0.05, 0.14 + 0.03 * Math.sin(a), entre(-0.4, 0.4), a, entre(-0.4, 0.4), frank);
+    const h = malla(new THREE.SphereGeometry(0.035, 12, 8), MAT.hoja, 0.63 + 0.03 * Math.cos(a), Z + 0.13 + rnd() * 0.05, 0.12 + 0.03 * Math.sin(a), entre(-0.4, 0.4), a, entre(-0.4, 0.4), frank);
     h.scale.set(0.5, 1.6, 1);
   }
 }
@@ -618,13 +630,14 @@ const COTAS = [
 // ------------------------------------------------------------ fichas
 const FICHAS = [
   { p: V(-0.5, H + 0.98, 0.17), t: 'Pendón de mesa', m: '33 x 80 cm', d: 'Autosoportante, con la pregunta de las poleras y un QR. El manual no permite el pendón tradicional en los mesones, así que va uno de mesa.' },
+  { p: V(0.1, H + 0.62, 0.15), t: 'Monitor de 27 pulgadas', m: '61 x 37 cm con marco, sobre su pie', d: 'Repite en grande la conversación del tablet, con subtítulos y el historial, para que la gente que pasa vea la demo sin audio. Va al fondo del tramo y no alcanza la placa de ETM.' },
   { p: V(-0.04, H + 0.27, 0.45), t: 'Demo en el tablet', m: 'Tablet de 11 pulgadas en atril', d: 'El visitante conversa con Rodrigo, un gerente de compras que negocia la renovación. Conviene brillo alto: es al aire libre y sin sombra.' },
   { p: V(-0.04, 1.86, 0.88), t: 'Audífonos con micrófono', m: 'Uno en uso y uno de repuesto', d: 'El manual prohíbe micrófonos y música en el espacio, así que la conversación va por audífonos y no molesta a los vecinos.' },
-  { p: V(0.46, H + 0.26, 0.31), t: 'Display con QR', m: 'Acrílico A5', d: 'Lleva a tryfrank.app para probar Frank desde el teléfono. Sirve también cuando hay fila en el tablet.' },
+  { p: V(0.58, H + 0.26, 0.39), t: 'Display con QR', m: 'Acrílico A5', d: 'Lleva a tryfrank.app para probar Frank desde el teléfono. Sirve también cuando hay fila en el tablet.' },
   { p: V(0, H + ALTO_ESPINA - 0.08, 0.04), t: 'Placa de ETM', m: '50 x 70 cm aprox.', d: 'La instala la organización con el nombre inscrito en la postulación. No se puede tapar, modificar ni quitar. El diseño real lo define ETM.' },
   { p: V(0.78, 1.95, 1.22), t: 'Equipo de Frank', m: 'Polera naranja y blanca', d: 'El stand no puede quedar sin supervisión en ningún momento, o se cobra la garantía. Hay tres credenciales para turnarse.' },
-  { p: V(0.62, H + 0.1, 0.5), t: 'Tarjetas y planta', m: 'Material impreso sustentable', d: 'El evento pide materiales que no dañen el medio ambiente. Nada de globos ni stickers.' },
-  { p: V(0.3, H - 0.16, 0.12), t: 'Enchufe', m: '220 V, máximo 1 kW', d: 'Incluido en el tramo. Si se usa zapatilla o alargador, tiene que tener certificación SEC.' },
+  { p: V(0.64, H + 0.1, 0.56), t: 'Tarjetas y planta', m: 'Material impreso sustentable', d: 'El evento pide materiales que no dañen el medio ambiente. Nada de globos ni stickers.' },
+  { p: V(0.3, H - 0.16, 0.12), t: 'Enchufe', m: '220 V, máximo 1 kW', d: 'Incluido en el tramo. El monitor (unos 30 a 40 W) y el cargador del tablet quedan muy por debajo del límite. Si se usa zapatilla o alargador, tiene que tener certificación SEC.' },
 ];
 
 const capa = document.createElement('div');
@@ -668,7 +681,7 @@ document.getElementById('cerrar-ficha').onclick = () => {
 const VISTAS = {
   evento: [V(-26, 17, 30), V(0, 1, -9)],
   isla: [V(-6.2, 3.1, 8.2), V(0, 1.2, 0)],
-  tres: [V(-1.45, 1.95, 2.35), V(0.05, 1.3, 0.25)],
+  tres: [V(-1.55, 2.3, 2.3), V(0.08, 1.3, 0.25)],
   frontal: [V(0.1, 2.35, 2.7), V(0, 1.3, 0.2)],
   demo: [V(0.42, 1.5, 0.98), V(-0.02, 1.14, 0.4)],
 };
