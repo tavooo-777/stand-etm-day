@@ -404,23 +404,25 @@ scene.add(frank);
   const Z = H;
   // placa de ETM con el nombre inscrito (aproximación)
   lamina(0.5, 0.7, MT.placa, 0, H + ALTO_ESPINA - 0.45, 0.025, 0, 0, frank);
+  // Distribución del tramo (x de -0,75 a 0,75): pendón a la izquierda, monitor al fondo,
+  // tablet y audífonos al frente, cooler de Red Bull a la derecha con el QR encima.
   // pendón de mesa 33 x 80 cm
-  caja(0.36, 0.055, 0.09, MAT.alu, -0.5, Z + 0.0275, 0.16, 0, 0, 0, frank);
-  lamina(0.33, 0.8, MT.pendon, -0.5, Z + 0.055 + 0.4, 0.165, 0, 0, frank);
-  caja(0.33, 0.8, 0.003, MAT.blanco, -0.5, Z + 0.055 + 0.4, 0.162, 0, 0, 0, frank);
+  caja(0.36, 0.055, 0.09, MAT.alu, -0.54, Z + 0.0275, 0.16, 0, 0, 0, frank);
+  lamina(0.33, 0.8, MT.pendon, -0.54, Z + 0.055 + 0.4, 0.165, 0, 0, frank);
+  caja(0.33, 0.8, 0.003, MAT.blanco, -0.54, Z + 0.055 + 0.4, 0.162, 0, 0, 0, frank);
   // tablet en atril
   const inc = -THREE.MathUtils.degToRad(22);
-  caja(0.14, 0.008, 0.12, MAT.alu, -0.04, Z + 0.004, 0.39, 0, 0, 0, frank);
-  liston(V(-0.04, Z + 0.008, 0.36), V(-0.04, Z + 0.1, 0.39), 0.02, MAT.alu, frank);
+  caja(0.14, 0.008, 0.12, MAT.alu, -0.12, Z + 0.004, 0.39, 0, 0, 0, frank);
+  liston(V(-0.12, Z + 0.008, 0.36), V(-0.12, Z + 0.1, 0.39), 0.02, MAT.alu, frank);
   const tab = new THREE.Group();
-  tab.position.set(-0.04, Z + 0.13, 0.42);
+  tab.position.set(-0.12, Z + 0.13, 0.42);
   tab.rotation.x = inc;
   frank.add(tab);
   caja(0.2475, 0.1785, 0.0065, MAT.grafito, 0, 0, 0, 0, 0, 0, tab);
   lamina(0.236, 0.167, MT.tablet, 0, 0, 0.0036, 0, 0, tab).castShadow = false;
   // audífonos sobre el mesón
   const aud = new THREE.Group();
-  aud.position.set(0.22, Z, 0.4);
+  aud.position.set(0.15, Z, 0.42);
   frank.add(aud);
   for (const s of [-1, 1]) {
     cil(0.042, 0.03, MAT.ink, s * 0.075, 0.015, 0, aud, 32);
@@ -428,33 +430,79 @@ scene.add(frank);
   }
   malla(new THREE.TorusGeometry(0.075, 0.009, 10, 40, Math.PI), MAT.ink, 0, 0.03, 0, -Math.PI / 2 + 0.25, 0, 0, aud);
   // monitor de 27" (16:9): pantalla de 59,8 x 33,6 cm, al fondo, mirando al pasillo
-  caja(0.24, 0.012, 0.18, MAT.grafito, 0.1, Z + 0.006, 0.12, 0, 0, 0, frank);
-  caja(0.05, 0.3, 0.02, MAT.grafito, 0.1, Z + 0.16, 0.08, 0, 0, 0, frank);
+  const XM = -0.02;
+  caja(0.24, 0.012, 0.18, MAT.grafito, XM, Z + 0.006, 0.12, 0, 0, 0, frank);
+  caja(0.05, 0.3, 0.02, MAT.grafito, XM, Z + 0.16, 0.08, 0, 0, 0, frank);
   const mon = new THREE.Group();
-  mon.position.set(0.1, Z + 0.385, 0.12);
+  mon.position.set(XM, Z + 0.385, 0.12);
   mon.rotation.x = -THREE.MathUtils.degToRad(5);
   frank.add(mon);
   caja(0.614, 0.37, 0.022, MAT.grafito, 0, 0, 0, 0, 0, 0, mon);
   caja(0.3, 0.2, 0.03, MAT.grafito, 0, -0.02, -0.025, 0, 0, 0, mon);
   lamina(0.598, 0.336, MT.monitor, 0, 0.008, 0.0115, 0, 0, mon).castShadow = false;
-  // display acrílico A5 con QR
+
+  // cooler de mesón de Red Bull: 40 x 42 x 55 cm, puerta de vidrio y latas de 250 ml
+  const CW = 0.4, CD = 0.42, CH = 0.55, CX = 0.53, CZ = 0.31;
+  const cool = new THREE.Group();
+  cool.position.set(CX, Z, CZ);
+  frank.add(cool);
+  const azul = mat('#11204d', { roughness: 0.45, metalness: 0.2 });
+  const plata = mat('#c4c8cf', { roughness: 0.3, metalness: 0.8 });
+  for (let i = 0; i < 4; i++) cil(0.012, 0.015, MAT.ink, (i % 2 ? 1 : -1) * (CW / 2 - 0.03), 0.0075, (i < 2 ? 1 : -1) * (CD / 2 - 0.03), cool, 10);
+  const y0 = 0.015;
+  caja(CW, 0.03, CD, azul, 0, y0 + 0.015, 0, 0, 0, 0, cool);                       // base
+  caja(CW, 0.03, CD, azul, 0, y0 + CH - 0.015, 0, 0, 0, 0, cool);                  // techo
+  for (const s of [-1, 1]) caja(0.025, CH, CD, azul, s * (CW / 2 - 0.0125), y0 + CH / 2, 0, 0, 0, 0, cool);
+  caja(CW, CH, 0.025, azul, 0, y0 + CH / 2, -CD / 2 + 0.0125, 0, 0, 0, cool);      // espalda
+  // cabezal con el logo
+  const cab = caja(CW, 0.11, 0.02, azul, 0, y0 + CH - 0.055, CD / 2 - 0.01, 0, 0, 0, cool);
+  cab.castShadow = false;
+  const logoMat = new THREE.MeshStandardMaterial({ map: tex('assets/redbull.png'), transparent: true, alphaTest: 0.05, roughness: 0.5 });
+  lamina(0.25, 0.093, logoMat, 0, y0 + CH - 0.055, CD / 2 + 0.0012, 0, 0, cool).castShadow = false;
+  // interior iluminado y parrillas
+  const yi = y0 + 0.03, hi = CH - 0.03 - 0.11;
+  const luz = new THREE.MeshStandardMaterial({ color: '#dfe6f2', emissive: '#cfdcf0', emissiveIntensity: 0.35, roughness: 0.6 });
+  lamina(CW - 0.05, hi, luz, 0, yi + hi / 2, -CD / 2 + 0.026, 0, 0, cool).castShadow = false;
+  // latas: textura de cuartos azul y plata, con el logo en el centro
+  const texLata = texCanvas(256, 256, (c, w, h) => {
+    for (let i = 0; i < 4; i++) for (let j = 0; j < 2; j++) {
+      c.fillStyle = (i + j) % 2 ? '#c9ccd2' : '#1d2f6b';
+      c.fillRect((i * w) / 4, (j * h) / 2, w / 4, h / 2);
+    }
+    c.fillStyle = '#b7bcc4'; c.fillRect(0, 0, w, 10); c.fillRect(0, h - 10, w, 10);
+  });
+  const lata = [new THREE.MeshStandardMaterial({ map: texLata, roughness: 0.3, metalness: 0.6 }), plata, plata];
+  const geoLata = new THREE.CylinderGeometry(0.0265, 0.0265, 0.134, 20);
+  for (let n = 0; n < 3; n++) {
+    const yb = yi + 0.005 + n * 0.135;
+    if (n > 0) caja(CW - 0.05, 0.004, CD - 0.06, plata, 0, yb - 0.003, 0.0, 0, 0, 0, cool).castShadow = false;
+    for (let fila = 0; fila < 2; fila++) for (let k = 0; k < 5; k++) {
+      if (n === 2 && fila === 0 && k === 1) continue; // una lata ya entregada
+      const l = new THREE.Mesh(geoLata, lata);
+      l.position.set(-0.13 + k * 0.065, yb + 0.067, 0.1 - fila * 0.075);
+      l.rotation.y = rnd() * 6;
+      cool.add(l);
+    }
+  }
+  // puerta de vidrio con marco y manilla
+  const zp = CD / 2 - 0.005;
+  for (const [w, h, x, y] of [[CW, 0.025, 0, yi + 0.0125], [CW, 0.02, 0, yi + hi - 0.01], [0.025, hi, -CW / 2 + 0.0125, yi + hi / 2], [0.025, hi, CW / 2 - 0.0125, yi + hi / 2]])
+    caja(w, h, 0.02, azul, x, y, zp, 0, 0, 0, cool);
+  caja(CW - 0.05, hi - 0.045, 0.006, MAT.acrilico, 0, yi + hi / 2, zp, 0, 0, 0, cool).castShadow = false;
+  caja(0.018, 0.22, 0.02, plata, CW / 2 - 0.045, yi + hi / 2, zp + 0.02, 0, 0, 0, cool);
+
+  // display acrílico A5 con QR, encima del cooler
+  const yq = Z + y0 + CH;
   const qr = new THREE.Group();
-  qr.position.set(0.58, Z + 0.005 + 0.112, 0.38);
+  qr.position.set(CX, yq + 0.005 + 0.112, 0.36);
   qr.rotation.x = -THREE.MathUtils.degToRad(10);
   frank.add(qr);
   lamina(0.148, 0.21, MT.qr, 0, 0, -0.001, 0, 0, qr);
   caja(0.16, 0.225, 0.005, MAT.acrilico, 0, 0, 0.002, 0, 0, 0, qr).castShadow = false;
-  caja(0.16, 0.005, 0.08, MAT.acrilico, 0.58, Z + 0.0025, 0.36, 0, 0, 0, frank).castShadow = false;
-  // tarjetas
-  caja(0.1, 0.025, 0.045, MAT.pino, 0.64, Z + 0.0125, 0.56, 0, 0, 0, frank);
-  for (let k = 0; k < 3; k++) lamina(0.09, 0.05, MT.tarjeta, 0.64, Z + 0.04, 0.56 - k * 0.004, -0.26, 0, frank);
-  // planta
-  cil(0.055, 0.1, MAT.maceta, 0.63, Z + 0.05, 0.12, frank);
-  for (let k = 0; k < 9; k++) {
-    const a = (k / 9) * Math.PI * 2;
-    const h = malla(new THREE.SphereGeometry(0.035, 12, 8), MAT.hoja, 0.63 + 0.03 * Math.cos(a), Z + 0.13 + rnd() * 0.05, 0.12 + 0.03 * Math.sin(a), entre(-0.4, 0.4), a, entre(-0.4, 0.4), frank);
-    h.scale.set(0.5, 1.6, 1);
-  }
+  caja(0.16, 0.005, 0.08, MAT.acrilico, CX, yq + 0.0025, 0.34, 0, 0, 0, frank).castShadow = false;
+  // tarjetas, delante del pendón
+  caja(0.1, 0.025, 0.045, MAT.pino, -0.36, Z + 0.0125, 0.55, 0, 0, 0, frank);
+  for (let k = 0; k < 3; k++) lamina(0.09, 0.05, MT.tarjeta, -0.36, Z + 0.04, 0.55 - k * 0.004, -0.26, 0, frank);
 }
 
 // ------------------------------------------------------------ personas
@@ -527,7 +575,7 @@ function poner(p, x, z, mira) {
 // En el espacio de Frank
 const polera = MT.polera;
 quietos.push(
-  poner(persona({ alto: 1.72, polera: '#5b7da0', audifonos: true, mochila: false }), -0.12, 0.9, [-0.04, 0.3]),
+  poner(persona({ alto: 1.72, polera: '#5b7da0', audifonos: true, mochila: false }), -0.2, 0.9, [-0.12, 0.3]),
   poner(persona({ alto: 1.68, polera: '#de5a24', pantalon: '#1e1e20', espalda: polera, credencial: true }), 0.78, 1.22, [-0.1, 0.9]),
   poner(persona({ alto: 1.64, polera: '#e7e1d6', celular: true, pelolargo: true }), -0.6, 1.2, [-0.5, 0.2]),
   poner(persona({ alto: 1.79, polera: '#ffffff', pantalon: '#1e1e20', espalda: polera }), 2.15, 1.25, [1.6, 1.6]),
@@ -629,15 +677,16 @@ const COTAS = [
 
 // ------------------------------------------------------------ fichas
 const FICHAS = [
-  { p: V(-0.5, H + 0.98, 0.17), t: 'Pendón de mesa', m: '33 x 80 cm', d: 'Autosoportante, con la pregunta de las poleras y un QR. El manual no permite el pendón tradicional en los mesones, así que va uno de mesa.' },
-  { p: V(0.1, H + 0.62, 0.15), t: 'Monitor de 27 pulgadas', m: '61 x 37 cm con marco, sobre su pie', d: 'Repite en grande la conversación del tablet, con subtítulos y el historial, para que la gente que pasa vea la demo sin audio. Va al fondo del tramo y no alcanza la placa de ETM.' },
-  { p: V(-0.04, H + 0.27, 0.45), t: 'Demo en el tablet', m: 'Tablet de 11 pulgadas en atril', d: 'El visitante conversa con Rodrigo, un gerente de compras que negocia la renovación. Conviene brillo alto: es al aire libre y sin sombra.' },
-  { p: V(-0.04, 1.86, 0.88), t: 'Audífonos con micrófono', m: 'Uno en uso y uno de repuesto', d: 'El manual prohíbe micrófonos y música en el espacio, así que la conversación va por audífonos y no molesta a los vecinos.' },
-  { p: V(0.58, H + 0.26, 0.39), t: 'Display con QR', m: 'Acrílico A5', d: 'Lleva a tryfrank.app para probar Frank desde el teléfono. Sirve también cuando hay fila en el tablet.' },
+  { p: V(-0.54, H + 0.98, 0.17), t: 'Pendón de mesa', m: '33 x 80 cm', d: 'Autosoportante, con la pregunta de las poleras y un QR. El manual no permite el pendón tradicional en los mesones, así que va uno de mesa.' },
+  { p: V(-0.02, H + 0.62, 0.15), t: 'Monitor de 27 pulgadas', m: '61 x 37 cm con marco, sobre su pie', d: 'Repite en grande la conversación del tablet, con subtítulos y el historial, para que la gente que pasa vea la demo sin audio. Va al fondo del tramo y no alcanza la placa de ETM.' },
+  { p: V(-0.12, H + 0.27, 0.45), t: 'Demo en el tablet', m: 'Tablet de 11 pulgadas en atril', d: 'El visitante conversa con Rodrigo, un gerente de compras que negocia la renovación. Conviene brillo alto: es al aire libre y sin sombra.' },
+  { p: V(-0.2, 1.86, 0.9), t: 'Audífonos con micrófono', m: 'Uno en uso y uno de repuesto', d: 'El manual prohíbe micrófonos y música en el espacio, así que la conversación va por audífonos y no molesta a los vecinos.' },
+  { p: V(0.53, H + 0.84, 0.37), t: 'Display con QR', m: 'Acrílico A5, encima del cooler', d: 'Lleva a tryfrank.app para probar Frank desde el teléfono. Sirve también cuando hay fila en el tablet.' },
+  { p: V(0.53, H + 0.35, 0.56), t: 'Cooler de Red Bull', m: 'De mesón, unos 40 x 42 x 55 cm', d: 'Latas frías para quien se acerca a probar. Ojo: el manual dice que no se puede manipular ningún producto de comida o líquido, así que hay que confirmar con ETM si se pueden regalar latas cerradas. Gasta unos 60 a 90 W.' },
   { p: V(0, H + ALTO_ESPINA - 0.08, 0.04), t: 'Placa de ETM', m: '50 x 70 cm aprox.', d: 'La instala la organización con el nombre inscrito en la postulación. No se puede tapar, modificar ni quitar. El diseño real lo define ETM.' },
   { p: V(0.78, 1.95, 1.22), t: 'Equipo de Frank', m: 'Polera naranja y blanca', d: 'El stand no puede quedar sin supervisión en ningún momento, o se cobra la garantía. Hay tres credenciales para turnarse.' },
-  { p: V(0.64, H + 0.1, 0.56), t: 'Tarjetas y planta', m: 'Material impreso sustentable', d: 'El evento pide materiales que no dañen el medio ambiente. Nada de globos ni stickers.' },
-  { p: V(0.3, H - 0.16, 0.12), t: 'Enchufe', m: '220 V, máximo 1 kW', d: 'Incluido en el tramo. El monitor (unos 30 a 40 W) y el cargador del tablet quedan muy por debajo del límite. Si se usa zapatilla o alargador, tiene que tener certificación SEC.' },
+  { p: V(-0.36, H + 0.1, 0.56), t: 'Tarjetas', m: 'Material impreso sustentable', d: 'El evento pide materiales que no dañen el medio ambiente. Nada de globos ni stickers.' },
+  { p: V(0.3, H - 0.16, 0.12), t: 'Enchufe', m: '220 V, máximo 1 kW', d: 'Incluido en el tramo. El cooler (60 a 90 W), el monitor (30 a 40 W) y el cargador del tablet suman menos de 150 W, muy por debajo del límite. Si se usa zapatilla o alargador, tiene que tener certificación SEC.' },
 ];
 
 const capa = document.createElement('div');
@@ -683,7 +732,7 @@ const VISTAS = {
   isla: [V(-6.2, 3.1, 8.2), V(0, 1.2, 0)],
   tres: [V(-1.55, 2.3, 2.3), V(0.08, 1.3, 0.25)],
   frontal: [V(0.1, 2.35, 2.7), V(0, 1.3, 0.2)],
-  demo: [V(0.42, 1.5, 0.98), V(-0.02, 1.14, 0.4)],
+  demo: [V(0.32, 1.5, 1.0), V(-0.1, 1.14, 0.4)],
 };
 let viaje = null;
 function irA(pos, mira, dur = 1.6) {
