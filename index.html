@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Frank en ETM Day</title>
+<meta name="description" content="Maqueta 3D del espacio de Frank en la isla de mesones de startups de ETM Day 2026.">
+<link rel="icon" href="assets/frank-signal-left-black.svg">
+<style>
+@font-face { font-family: Sora; src: url(assets/Sora-Variable-latin.woff2) format("woff2"); font-weight: 100 800; font-display: swap; }
+@font-face { font-family: Satoshi; src: url(assets/Satoshi-Variable.ttf); font-weight: 300 900; font-display: swap; }
+:root {
+  --orange: #de5a24; --ink: #181614; --paper: #f7f2eb; --clay: #d47a4a; --bone: #e7dfd1;
+  --line: rgba(24, 22, 20, .14); --muted: #6b635b;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; -webkit-user-select: none; user-select: none; background: #dfe7ee; color: var(--ink); font-family: Satoshi, system-ui, sans-serif; }
+canvas { display: block; touch-action: none; }
+button { font: inherit; color: inherit; cursor: pointer; }
+
+.panel { position: fixed; background: var(--paper); border: 1px solid var(--line); }
+
+#intro { top: 16px; left: 16px; width: 340px; padding: 18px 20px 16px; }
+#intro img { height: 22px; display: block; }
+#intro h1 { font-family: Sora; font-weight: 700; font-size: 22px; line-height: 1.15; letter-spacing: -.02em; margin-top: 14px; }
+#intro p { font-size: 14px; line-height: 1.45; color: var(--muted); margin-top: 8px; }
+#intro .datos { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 13px; }
+#intro .datos dt { color: var(--muted); }
+#intro .datos dd { font-weight: 600; }
+#plegar { position: absolute; top: 12px; right: 12px; width: 28px; height: 28px; border: 1px solid var(--line); background: transparent; font-size: 16px; line-height: 1; }
+#intro.plegado p, #intro.plegado .datos { display: none; }
+#intro.plegado h1 { font-size: 16px; }
+
+#barra { left: 50%; bottom: 16px; transform: translateX(-50%); display: flex; gap: 0; max-width: calc(100vw - 32px); overflow-x: auto; scrollbar-width: none; }
+#barra::-webkit-scrollbar { display: none; }
+#barra button { background: transparent; border: 0; border-right: 1px solid var(--line); padding: 12px 16px; font-size: 14px; font-weight: 600; white-space: nowrap; }
+#barra button:last-child { border-right: 0; }
+#barra button.activo { background: var(--ink); color: var(--paper); }
+#barra button.toggle.on { background: var(--orange); color: var(--ink); }
+#barra .sep { width: 6px; background: var(--bone); flex: none; }
+
+#ficha { left: 16px; bottom: 76px; width: 320px; padding: 16px 18px; display: none; }
+#ficha.visible { display: block; }
+#ficha h2 { font-family: Sora; font-weight: 700; font-size: 18px; letter-spacing: -.01em; padding-right: 28px; }
+#ficha .medida { font-size: 13px; font-weight: 700; color: var(--orange); margin-top: 4px; }
+#ficha p { font-size: 14px; line-height: 1.45; margin-top: 8px; }
+#ficha button { position: absolute; top: 10px; right: 10px; width: 28px; height: 28px; border: 1px solid var(--line); background: transparent; }
+
+#ayuda { right: 16px; top: 16px; padding: 10px 14px; font-size: 13px; color: var(--muted); }
+
+.etiqueta { position: fixed; left: 0; top: 0; transform: translate(-50%, -50%); display: flex; align-items: center; gap: 0; pointer-events: auto; cursor: pointer; will-change: transform; }
+.etiqueta .num { width: 26px; height: 26px; background: var(--orange); color: var(--ink); font-family: Sora; font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; border: 2px solid var(--paper); }
+.etiqueta .txt { background: var(--ink); color: var(--paper); font-size: 12px; font-weight: 600; padding: 5px 8px; white-space: nowrap; opacity: 0; transform: translateX(-4px); transition: opacity .15s, transform .15s; pointer-events: none; }
+.etiqueta:hover .txt, .etiqueta.sel .txt { opacity: 1; transform: none; }
+.cota { position: fixed; left: 0; top: 0; transform: translate(-50%, -50%); background: var(--orange); color: var(--ink); font-family: Sora; font-weight: 700; font-size: 12px; padding: 3px 6px; pointer-events: none; white-space: nowrap; }
+.oculto { display: none !important; }
+
+#carga { position: fixed; inset: 0; background: var(--paper); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; z-index: 10; transition: opacity .5s; }
+#carga img { height: 30px; }
+#carga span { font-size: 14px; color: var(--muted); }
+#carga.fuera { opacity: 0; pointer-events: none; }
+
+@media (max-width: 640px) {
+  #intro { left: 12px; right: 12px; top: 12px; width: auto; padding: 14px 16px 12px; }
+  #intro h1 { font-size: 18px; margin-top: 10px; }
+  #intro p { font-size: 13px; }
+  #ayuda { display: none; }
+  #ficha { left: 12px; right: 12px; width: auto; bottom: 70px; }
+  #barra { bottom: 12px; max-width: calc(100vw - 24px); }
+  #barra button { padding: 11px 12px; font-size: 13px; }
+}
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<div id="carga"><img src="assets/frank-signal-left-black.svg" alt="Frank"><span>Armando el parque</span></div>
+
+<section id="intro" class="panel">
+  <img src="assets/frank-signal-left-black.svg" alt="Frank">
+  <button id="plegar" aria-label="Plegar panel">−</button>
+  <h1>Nuestro espacio en ETM Day</h1>
+  <p>Maqueta del tramo de Frank en la isla de mesones de startups. Toca los números para ver cada elemento.</p>
+  <dl class="datos">
+    <dt>Fechas</dt><dd>19, 20 y 21 de noviembre</dd>
+    <dt>Lugar</dt><dd>Parque Bicentenario, Vitacura</dd>
+    <dt>Espacio</dt><dd>1,50 m de frente y 0,60 m de fondo</dd>
+    <dt>Horario</dt><dd>9:00 a 19:00</dd>
+  </dl>
+</section>
+
+<div id="ayuda" class="panel">Arrastra para girar. Rueda o pellizca para acercar.</div>
+
+<section id="ficha" class="panel" aria-live="polite">
+  <button id="cerrar-ficha" aria-label="Cerrar">×</button>
+  <h2></h2>
+  <div class="medida"></div>
+  <p></p>
+</section>
+
+<nav id="barra" class="panel" aria-label="Vistas">
+  <button data-vista="evento">Evento</button>
+  <button data-vista="isla">Isla</button>
+  <button data-vista="tres">Tres cuartos</button>
+  <button data-vista="frontal">Frontal</button>
+  <button data-vista="demo">Demo</button>
+  <span class="sep"></span>
+  <button class="toggle" id="t-medidas">Medidas</button>
+  <button class="toggle on" id="t-etiquetas">Etiquetas</button>
+  <button class="toggle on" id="t-personas">Personas</button>
+  <button class="toggle" id="t-girar">Girar</button>
+</nav>
+
+<script type="module" src="main.js"></script>
+</body>
+</html>
